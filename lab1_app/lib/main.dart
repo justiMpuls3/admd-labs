@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'models/user.dart';
+import 'models/bank_account.dart';
+import 'models/library_item.dart';
+import 'models/book.dart';
+import 'models/magazine.dart';
+import 'models/library.dart';
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -56,6 +64,53 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+
+  late final List<User> users;
+  late final List<BankAccount> accounts;
+  late final Library library;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final user1 = User(name: 'Alex');
+    final user2 = User(name: 'Maria', age: 22, email: 'maria@example.com');
+    final user3 = User(name: 'Dan', email: 'dan@company.ro');
+    users = [user1, user2, user3];
+
+    final acc1 = BankAccount(
+      holderName: 'Ion Popescu',
+      bankBranch: 'Bucharest, Sector 1',
+    );
+    acc1.initializeAccount('RO49INGB0000999912345678');
+
+    final acc2 = BankAccount(
+      holderName: 'Elena Dumitru',
+    );
+    accounts = [acc1, acc2];
+
+    library = Library();
+    final book1 = Book(
+      title: 'Clean Code',
+      author: 'Robert C. Martin',
+      pageCount: 464,
+      isbn: '978-0132350884',
+    );
+    final book2 = Book(title: 'Dart Apprentice');
+    final mag1 = Magazine(
+      title: 'IEEE Software',
+      publisher: 'IEEE Computer Society',
+      issueNumber: 142,
+    );
+
+    library.addItem(book1);
+    library.addItem(book2);
+    library.addItem(mag1);
+
+    library.borrowItem(book1, user2);
+  }
+
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -102,13 +157,59 @@ class _MyHomePageState extends State<MyHomePage> {
           // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+
+
+            const SizedBox(height: 16),
+
+            Expanded(
+              child: ListView(
+                children: [
+                  ...users.map((u) => ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(u.name),
+                        subtitle: Text(
+                          'Age: ${u.getDisplayAge()} | Email: ${u.email ?? "Not provided"}',
+                        ),
+                      )),
+                  const Divider(),
+                  ...accounts.map((a) => ListTile(
+                        leading: const Icon(Icons.account_balance),
+                        title: Text('${a.holderName} (${a.displayAccountNumber})'),
+                        subtitle: Text(
+                          'Branch: ${a.bankBranch ?? "N/A"} | Balance: \$${a.balance.toStringAsFixed(2)}',
+                        ),
+                      )),
+                  const Divider(),
+                  ...library.items.map((item) {
+                    final isBorrowed = item.borrower != null;
+                    return ListTile(
+                      leading: Icon(item is Book ? Icons.book : Icons.newspaper),
+                      title: Text(item.title),
+                      subtitle: Text(
+                        'Author: ${item.author ?? "Unknown"} | '
+                        'Status: ${isBorrowed ? "Borrowed by ${item.borrower?.name ?? 'Unknown'}" : "Available"}',
+                      ),
+                      trailing: Text(
+                        isBorrowed ? 'Checked out' : 'In Library',
+                        style: TextStyle(
+                          color: isBorrowed ? Colors.red : Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+
+
           ],
         ),
       ),
