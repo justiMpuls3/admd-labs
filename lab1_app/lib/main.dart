@@ -6,7 +6,7 @@ import 'models/library_item.dart';
 import 'models/book.dart';
 import 'models/magazine.dart';
 import 'models/library.dart';
-
+import 'screens/todo_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -64,7 +64,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-
   late final List<User> users;
   late final List<BankAccount> accounts;
   late final Library library;
@@ -110,7 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
     library.borrowItem(book1, user2);
   }
 
-
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -139,6 +137,18 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.checklist),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const TodoScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -164,10 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-
-
             const SizedBox(height: 16),
-
             Expanded(
               child: ListView(
                 children: [
@@ -208,8 +215,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-
-
           ],
         ),
       ),
